@@ -1,14 +1,18 @@
-# Videojuego 3D estilo Doom - Python
+# Videojuego 3D de Exploración - Python
 
-Un videojuego 3D simple inspirado en el primer Doom, creado con Python y Pygame usando técnicas de raycasting.
+Un videojuego 3D mejorado inspirado en el primer Doom, creado con Python y Pygame usando técnicas de raycasting. Versión expandida con mapa más grande y sistema de stamina para correr.
 
 ## Características
 
-- Vista 3D en primera persona usando raycasting
-- Movimiento fluido por un laberinto 3D
-- Minimapa en tiempo real
-- Detección de colisiones
-- Controles similares a los FPS clásicos
+- **Vista 3D en primera persona** usando raycasting avanzado
+- **Mapa expansivo** de 20x20 con múltiples áreas para explorar
+- **Sistema de movimiento mejorado** con capacidad de correr y movimiento lateral
+- **Sistema de stamina** que limita el tiempo de carrera
+- **Diferentes tipos de paredes** con colores distintivos
+- **Minimapa detallado** en tiempo real con colores diferenciados
+- **Interfaz de usuario** con barra de stamina e indicadores de estado
+- **Detección de colisiones** suave y precisa
+- **Efectos visuales** mejorados con gradientes en cielo y suelo
 
 ## Requisitos
 
@@ -36,42 +40,91 @@ Un videojuego 3D simple inspirado en el primer Doom, creado con Python y Pygame 
 
 ## Controles
 
+### Movimiento Básico
 - **W** o **Flecha Arriba**: Avanzar
 - **S** o **Flecha Abajo**: Retroceder  
 - **A** o **Flecha Izquierda**: Girar a la izquierda
 - **D** o **Flecha Derecha**: Girar a la derecha
+
+### Movimiento Avanzado
+- **Q**: Moverse lateralmente a la izquierda (strafing)
+- **E**: Moverse lateralmente a la derecha (strafing)
+- **SHIFT** (mantener): Correr (consume stamina)
+
+### Otros
 - **ESC**: Salir del juego
+
+## Nuevas Características
+
+### Sistema de Stamina
+- **Barra de stamina** visible en la esquina inferior derecha
+- **Regeneración automática** cuando no estás corriendo
+- **Indicador visual** de estado (caminando/corriendo)
+- **Colores de alerta** cuando la stamina está baja
+
+### Mapa Expandido
+- **Tamaño 20x20** con múltiples salas y pasillos
+- **Dos tipos de paredes**: básicas (grises) y especiales (marrones)
+- **Diseño laberíntico** con múltiples rutas de exploración
+- **Salas interconectadas** para una experiencia de exploración rica
+
+### Mejoras Visuales
+- **Gradientes** en cielo y suelo para mayor realismo
+- **Sombreado mejorado** basado en distancia
+- **Colores diferenciados** para tipos de pared
+- **Minimapa detallado** con código de colores
 
 ## Cómo funciona
 
-El juego utiliza **raycasting**, la misma técnica que usaba el Doom original. Para cada columna de píxeles en la pantalla:
+El juego utiliza **raycasting**, la misma técnica que usaba el Doom original, pero con mejoras:
 
-1. Se lanza un "rayo" desde la posición del jugador
-2. Se calcula dónde el rayo intersecta con una pared
-3. Se dibuja una línea vertical proporcional a la distancia (más cerca = más alta)
-4. Se aplica sombreado basado en la distancia para dar profundidad
+1. **Para cada columna de píxeles** en la pantalla se lanza un "rayo"
+2. **Se detecta el tipo de pared** que intersecta el rayo
+3. **Se calcula la distancia** y se aplica corrección de "ojo de pez"
+4. **Se dibuja una línea vertical** proporcional a la distancia
+5. **Se aplican efectos visuales** como sombreado y colores específicos
 
 ## Estructura del proyecto
 
-- `main.py`: Archivo principal con toda la lógica del juego
+- `main.py`: Archivo principal con toda la lógica del juego mejorado
 - `requirements.txt`: Dependencias de Python necesarias
-- `README.md`: Este archivo con las instrucciones
+- `README.md`: Este archivo con las instrucciones actualizadas
 
 ## Personalización
 
 Puedes modificar fácilmente:
 
+### Mapa y Mundo
 - **Mapa**: Edita la variable `WORLD_MAP` en `main.py`
-- **Velocidad**: Cambia `PLAYER_SPEED` y `TURN_SPEED`
+- **Colores de paredes**: Modifica el diccionario `WALL_COLORS`
+- **Tamaño de tiles**: Cambia `TILE_SIZE`
+
+### Jugador y Movimiento
+- **Velocidades**: Ajusta `PLAYER_SPEED` y `RUN_SPEED`
+- **Stamina**: Modifica tasas de regeneración y consumo
+- **Rotación**: Cambia `TURN_SPEED`
+
+### Visuales
 - **Resolución**: Modifica `WINDOW_WIDTH` y `WINDOW_HEIGHT`
 - **Campo de visión**: Ajusta `FOV`
-- **Colores**: Cambia los valores RGB en las constantes de color
+- **Calidad de renderizado**: Cambia `NUM_RAYS`
+- **Colores**: Personaliza todas las constantes de color
 
-## Posibles mejoras
+## Ideas para Futuras Mejoras
 
-- Texturas en las paredes
-- Enemigos y objetos
-- Sonidos
-- Más niveles
-- Armas y disparos
-- Puertas y interacciones
+- **Texturas** en las paredes en lugar de colores sólidos
+- **Múltiples niveles** con escaleras o teleportadores
+- **Objetos coleccionables** dispersos por el mapa
+- **Sonidos ambientales** y efectos de audio
+- **Puertas** que se pueden abrir y cerrar
+- **Iluminación dinámica** con antorchas o lámparas
+- **Partículas** y efectos visuales atmosféricos
+- **Sistema de guardado** de progreso
+
+## Rendimiento
+
+- El juego está optimizado para correr a **60 FPS** en hardware moderno
+- El número de rayos puede ajustarse para mejor rendimiento en hardware más lento
+- La resolución puede reducirse para mejorar el framerate
+
+¡Disfruta explorando el mundo 3D!
