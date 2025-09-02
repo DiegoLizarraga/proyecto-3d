@@ -10,21 +10,21 @@ WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 FPS = 60
 
-# Colores
+# Colores para el simulador de graffiti
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-CYAN = (0, 255, 255)
-MAGENTA = (255, 0, 255)
-GRAY = (128, 128, 128)
-DARK_GRAY = (64, 64, 64)
-LIGHT_GRAY = (192, 192, 192)
-BROWN = (139, 69, 19)
-DARK_BLUE = (0, 0, 139)
-DARK_GREEN = (0, 100, 0)
+LIGHT_GRAY = (220, 220, 220)
+GRAY = (160, 160, 160)
+DARK_GRAY = (100, 100, 100)
+VERY_DARK_GRAY = (60, 60, 60)
+RED = (255, 50, 50)
+BLUE = (50, 50, 255)
+GREEN = (50, 255, 50)
+YELLOW = (255, 255, 50)
+PINK = (255, 100, 150)
+ORANGE = (255, 150, 50)
+PURPLE = (150, 50, 255)
+CYAN = (50, 255, 255)
 
 # Configuración del jugador
 PLAYER_SPEED = 2.5  # Velocidad de caminar
@@ -34,38 +34,47 @@ FOV = 60  # Campo de visión
 HALF_FOV = FOV / 2
 NUM_RAYS = WINDOW_WIDTH // 2  # Número de rayos para el raycasting
 
-# Mapa del mundo expandido (1 = pared básica, 2 = pared especial, 0 = espacio vacío)
+# Mapa del barrio (1 = casa/edificio, 2 = pared alta, 0 = calle/espacio vacío)
 WORLD_MAP = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 2, 2, 0, 0, 2, 2, 0, 1, 1, 0, 2, 2, 0, 0, 2, 2, 0, 1],
-    [1, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 0, 2, 0, 1, 1, 0, 0, 1, 1, 0, 2, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-    [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 0, 2, 0, 1, 1, 0, 0, 1, 1, 0, 2, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-    [1, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 1],
-    [1, 0, 2, 2, 0, 0, 2, 2, 0, 1, 1, 0, 2, 2, 0, 0, 2, 2, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1],
+    [1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1],
+    [1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+    [1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1],
+    [1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1],
+    [1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
+#libre para modificarse
 
 MAP_WIDTH = len(WORLD_MAP[0])
 MAP_HEIGHT = len(WORLD_MAP)
 TILE_SIZE = 64
 
-# Diccionario de colores para diferentes tipos de paredes
+# Sistema de graffiti - almacena qué paredes han sido rayadas
+# Cada entrada es: (map_x, map_y, wall_type, graffiti_data)
+graffiti_walls = {}
+
+# Colores de spray disponibles
+SPRAY_COLORS = [RED, BLUE, GREEN, YELLOW, PINK, ORANGE, PURPLE, CYAN]
+current_spray_color = 0  # Índice del color actual
+
+# Diccionario de colores base para diferentes tipos de paredes
 WALL_COLORS = {
-    1: (100, 100, 100),    # Pared básica gris
-    2: (139, 69, 19),      # Pared especial marrón
+    1: LIGHT_GRAY,    # Casas - gris claro
+    2: WHITE,         # Paredes altas - blanco
 }
 
 class Player:
@@ -78,8 +87,20 @@ class Player:
         self.max_stamina = 100
         self.stamina_regen_rate = 1.5
         self.stamina_drain_rate = 2.0
+        self.spray_range = TILE_SIZE * 1.2  # Rango para rayar paredes
     
     def update(self, keys):
+        global current_spray_color
+        
+        # Cambiar color de spray con las teclas numéricas
+        for i in range(len(SPRAY_COLORS)):
+            if keys[pygame.K_1 + i]:
+                current_spray_color = i
+        
+        # Rayar pared con Z
+        if keys[pygame.K_z]:
+            self.spray_wall()
+        
         # Verificar si el jugador quiere correr (mantener shift presionado)
         running_keys = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
         
@@ -146,6 +167,32 @@ class Player:
             # Verificar colisión Y
             if WORLD_MAP[map_y][int(self.x // TILE_SIZE)] == 0:
                 self.y = new_y
+    
+    def spray_wall(self):
+        """Rayar la pared más cercana en la dirección que mira el jugador"""
+        # Lanzar un rayo en la dirección que mira el jugador
+        distance, wall_x, wall_y, wall_type = cast_ray(self.x, self.y, self.angle)
+        
+        # Solo rayar si la pared está al alcance
+        if distance <= self.spray_range and wall_type != 0:
+            wall_key = (wall_x, wall_y)
+            
+            if wall_key not in graffiti_walls:
+                graffiti_walls[wall_key] = []
+            
+            # Agregar un "graffiti" (punto de color) en esta pared
+            # Simular diferentes patrones de graffiti
+            import random
+            graffiti_pattern = {
+                'color': SPRAY_COLORS[current_spray_color],
+                'pattern': random.choice(['dot', 'line', 'splash'])
+            }
+            
+            graffiti_walls[wall_key].append(graffiti_pattern)
+            
+            # Limitar el número de graffitis por pared para rendimiento
+            if len(graffiti_walls[wall_key]) > 20:
+                graffiti_walls[wall_key] = graffiti_walls[wall_key][-20:]
 
 def cast_ray(start_x, start_y, angle):
     """Lanza un rayo y devuelve la distancia hasta la primera pared y su tipo"""
@@ -185,21 +232,21 @@ def cast_ray(start_x, start_y, angle):
     return float('inf'), 0, 0, 0
 
 def render_3d(screen, player):
-    """Renderiza la vista 3D usando raycasting"""
+    """Renderiza la vista 3D usando raycasting con efectos de graffiti"""
     
     # Limpiar pantalla
     screen.fill(BLACK)
     
-    # Dibujar cielo (mitad superior) con gradiente
+    # Dibujar cielo (mitad superior) - tonos grises
     for i in range(WINDOW_HEIGHT // 2):
-        color_intensity = int(50 + (i * 50) / (WINDOW_HEIGHT // 2))
-        sky_color = (color_intensity // 4, color_intensity // 4, color_intensity)
+        color_intensity = int(200 + (i * 55) / (WINDOW_HEIGHT // 2))
+        sky_color = (color_intensity, color_intensity, color_intensity)
         pygame.draw.line(screen, sky_color, (0, i), (WINDOW_WIDTH, i))
     
-    # Dibujar suelo (mitad inferior) con gradiente
+    # Dibujar suelo (mitad inferior) - asfalto gris oscuro
     for i in range(WINDOW_HEIGHT // 2):
-        color_intensity = int(100 - (i * 50) / (WINDOW_HEIGHT // 2))
-        floor_color = (color_intensity // 2, color_intensity // 3, color_intensity // 4)
+        color_intensity = int(80 - (i * 20) / (WINDOW_HEIGHT // 2))
+        floor_color = (color_intensity, color_intensity, color_intensity)
         pygame.draw.line(screen, floor_color, (0, WINDOW_HEIGHT // 2 + i), (WINDOW_WIDTH, WINDOW_HEIGHT // 2 + i))
     
     # Calcular el ángulo inicial
@@ -231,23 +278,50 @@ def render_3d(screen, player):
             wall_bottom = wall_top + wall_height
             
             # Obtener color base de la pared según su tipo
-            base_color = WALL_COLORS.get(wall_type, (128, 128, 128))
+            base_color = WALL_COLORS.get(wall_type, GRAY)
             
             # Calcular sombreado basado en la distancia
-            shade_factor = max(0.2, 1.0 - (distance / (TILE_SIZE * 8)))
+            shade_factor = max(0.3, 1.0 - (distance / (TILE_SIZE * 6)))
             wall_color = (
                 int(base_color[0] * shade_factor),
                 int(base_color[1] * shade_factor),
                 int(base_color[2] * shade_factor)
             )
             
-            # Dibujar la columna de la pared
+            # Dibujar la columna de la pared base
             x = i * 2  # Cada rayo dibuja 2 píxeles de ancho
             pygame.draw.rect(screen, wall_color, (x, wall_top, 2, wall_height))
+            
+            # Dibujar graffiti si existe en esta pared
+            wall_key = (wall_x, wall_y)
+            if wall_key in graffiti_walls:
+                draw_graffiti_on_wall(screen, x, wall_top, wall_height, graffiti_walls[wall_key], corrected_distance)
+
+def draw_graffiti_on_wall(screen, x, wall_top, wall_height, graffiti_list, distance):
+    """Dibuja graffiti en una columna de pared"""
+    if distance > TILE_SIZE * 4:  # No dibujar graffiti muy lejano
+        return
+    
+    for graffiti in graffiti_list:
+        import random
+        
+        # Posición aleatoria en la pared para el graffiti
+        graffiti_y = wall_top + random.randint(int(wall_height * 0.2), int(wall_height * 0.8))
+        
+        if graffiti['pattern'] == 'dot':
+            # Punto de graffiti
+            pygame.draw.rect(screen, graffiti['color'], (x, graffiti_y, 2, 3))
+        elif graffiti['pattern'] == 'line':
+            # Línea de graffiti
+            pygame.draw.rect(screen, graffiti['color'], (x, graffiti_y, 2, 8))
+        elif graffiti['pattern'] == 'splash':
+            # Salpicadura de graffiti
+            pygame.draw.rect(screen, graffiti['color'], (x, graffiti_y, 2, 2))
+            pygame.draw.rect(screen, graffiti['color'], (x, graffiti_y + 3, 2, 1))
 
 def draw_minimap(screen, player):
-    """Dibuja un minimapa mejorado en la esquina superior izquierda"""
-    minimap_size = 200
+    """Dibuja un minimapa del barrio"""
+    minimap_size = 180
     minimap_scale = minimap_size / (MAP_WIDTH * TILE_SIZE)
     
     # Fondo del minimapa con borde
@@ -263,41 +337,49 @@ def draw_minimap(screen, player):
             wall_type = WORLD_MAP[y][x]
             
             if wall_type == 0:
-                color = BLACK  # Espacio vacío
+                color = DARK_GRAY  # Calles
             elif wall_type == 1:
-                color = GRAY   # Pared básica
+                color = LIGHT_GRAY   # Casas
             elif wall_type == 2:
-                color = BROWN  # Pared especial
+                color = WHITE  # Paredes altas
             else:
-                color = WHITE
+                color = GRAY
             
             rect_x = 10 + x * tile_width
             rect_y = 10 + y * tile_height
             pygame.draw.rect(screen, color, (rect_x, rect_y, tile_width, tile_height))
+            
+            # Marcar paredes con graffiti
+            wall_key = (x, y)
+            if wall_key in graffiti_walls:
+                # Punto pequeño para indicar graffiti
+                center_x = rect_x + tile_width // 2
+                center_y = rect_y + tile_height // 2
+                pygame.draw.circle(screen, RED, (center_x, center_y), 1)
     
     # Dibujar al jugador
     player_x = 10 + player.x * minimap_scale
     player_y = 10 + player.y * minimap_scale
     
-    # Círculo del jugador con borde
-    pygame.draw.circle(screen, BLACK, (int(player_x), int(player_y)), 5)
-    pygame.draw.circle(screen, RED, (int(player_x), int(player_y)), 3)
+    # Círculo del jugador
+    pygame.draw.circle(screen, BLACK, (int(player_x), int(player_y)), 4)
+    pygame.draw.circle(screen, BLUE, (int(player_x), int(player_y)), 2)
     
     # Dibujar dirección del jugador
-    end_x = player_x + math.cos(math.radians(player.angle)) * 15
-    end_y = player_y + math.sin(math.radians(player.angle)) * 15
-    pygame.draw.line(screen, RED, (player_x, player_y), (end_x, end_y), 3)
+    end_x = player_x + math.cos(math.radians(player.angle)) * 12
+    end_y = player_y + math.sin(math.radians(player.angle)) * 12
+    pygame.draw.line(screen, BLUE, (player_x, player_y), (end_x, end_y), 2)
 
 def draw_ui(screen, player):
-    """Dibuja la interfaz de usuario (stamina, estado, etc.)"""
+    """Dibuja la interfaz de usuario del simulador de graffiti"""
     font = pygame.font.Font(None, 24)
-    small_font = pygame.font.Font(None, 20)
+    small_font = pygame.font.Font(None, 18)
     
-    # Barra de stamina
-    stamina_width = 200
-    stamina_height = 20
-    stamina_x = WINDOW_WIDTH - stamina_width - 20
-    stamina_y = WINDOW_HEIGHT - 40
+    # Barra de stamina - MOVIDA A LA IZQUIERDA
+    stamina_width = 150
+    stamina_height = 15
+    stamina_x = 20  # Ahora en la izquierda
+    stamina_y = WINDOW_HEIGHT - 60
     
     # Fondo de la barra de stamina
     pygame.draw.rect(screen, BLACK, (stamina_x - 2, stamina_y - 2, stamina_width + 4, stamina_height + 4))
@@ -309,39 +391,72 @@ def draw_ui(screen, player):
     pygame.draw.rect(screen, stamina_color, (stamina_x, stamina_y, current_stamina_width, stamina_height))
     
     # Texto de stamina
-    stamina_text = small_font.render(f"Stamina: {int(player.stamina)}/{player.max_stamina}", True, WHITE)
-    screen.blit(stamina_text, (stamina_x, stamina_y - 20))
+    stamina_text = small_font.render(f"Stamina: {int(player.stamina)}", True, WHITE)
+    screen.blit(stamina_text, (stamina_x, stamina_y - 18))
     
-    # Indicador de velocidad
-    speed_text = "CORRIENDO" if player.is_running else "CAMINANDO"
-    speed_color = YELLOW if player.is_running else WHITE
-    speed_surface = font.render(speed_text, True, speed_color)
-    screen.blit(speed_surface, (stamina_x, stamina_y + 25))
+    # Mostrar color de spray actual - mantener arriba a la derecha
+    spray_preview_size = 30
+    spray_x = WINDOW_WIDTH - 60
+    spray_y = 20
     
-    # Mostrar controles
+    pygame.draw.rect(screen, BLACK, (spray_x - 2, spray_y - 2, spray_preview_size + 4, spray_preview_size + 4))
+    pygame.draw.rect(screen, SPRAY_COLORS[current_spray_color], (spray_x, spray_y, spray_preview_size, spray_preview_size))
+    
+    # Texto del color actual
+    color_text = small_font.render(f"Color: {current_spray_color + 1}", True, WHITE)
+    screen.blit(color_text, (spray_x - 50, spray_y + 35))
+    
+    # Controles - MOVIDOS ABAJO A LA DERECHA
     controls_text = [
-        "Controles:",
+        "=== CONTROLES ===",
+        "Movimiento:",
         "W/↑ - Avanzar",
         "S/↓ - Retroceder", 
         "A/← - Girar izquierda",
         "D/→ - Girar derecha",
-        "Q - Moverse izquierda",
-        "E - Moverse derecha",
+        "Q/E - Moverse lateral",
         "SHIFT - Correr",
+        "",
+        "Graffiti:",
+        "Z - Rayar pared",
+        "1-8 - Cambiar color",
+        "",
         "ESC - Salir"
     ]
     
-    for i, text in enumerate(controls_text):
-        color = WHITE if i == 0 else LIGHT_GRAY
-        text_surface = small_font.render(text, True, color)
-        screen.blit(text_surface, (20, WINDOW_HEIGHT - 200 + i * 20))
+    # Posicionar controles en la esquina inferior derecha
+    controls_start_y = WINDOW_HEIGHT - (len([t for t in controls_text if t != ""]) * 16) - 20
+    controls_x = WINDOW_WIDTH - 180
+    
+    line_count = 0
+    for text in controls_text:
+        if text == "":
+            continue
+            
+        if text == "=== CONTROLES ===":
+            color = YELLOW
+            text_surface = small_font.render(text, True, color)
+        elif text == "Movimiento:" or text == "Graffiti:":
+            color = WHITE
+            text_surface = small_font.render(text, True, color)
+        else:
+            color = LIGHT_GRAY
+            text_surface = small_font.render(text, True, color)
+        
+        screen.blit(text_surface, (controls_x, controls_start_y + line_count * 16))
+        line_count += 1
+    
+    # Contador de graffitis - mantener abajo a la izquierda
+    total_graffitis = sum(len(graffiti_list) for graffiti_list in graffiti_walls.values())
+    graffiti_counter = font.render(f"Graffitis: {total_graffitis}", True, YELLOW)
+    screen.blit(graffiti_counter, (20, WINDOW_HEIGHT - 40))
 
 def main():
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption("Juego 3D Mejorado - Exploración")
+    pygame.display.set_caption("Simulador de Graffiti 3D - Barrio")
     clock = pygame.time.Clock()
     
-    # Crear jugador (posición inicial)
+    # Crear jugador (empezar en una calle del barrio)
     player = Player(TILE_SIZE * 1.5, TILE_SIZE * 1.5, 0)
     
     running = True
