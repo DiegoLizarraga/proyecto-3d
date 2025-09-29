@@ -126,7 +126,7 @@ Puedes modificar fácilmente:
 
 ## Rendimiento
 
-- El juego está optimizado para correr a **60 FPS** en hardware moderno
+- El juego está optimizado para correr a **60 FPS** en hardware moderno bueno falta optimizarlo
 - El número de rayos puede ajustarse para mejor rendimiento en hardware más lento
 - La resolución puede reducirse para mejorar el framerate
 
