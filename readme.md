@@ -131,3 +131,8 @@ Puedes modificar fácilmente:
 - La resolución puede reducirse para mejorar el framerate
 
 ¡Disfruta explorando el mundo 3D!
+
+
+me dejo en locura python
+
+<img width="1536" height="1024" alt="ChatGPT Image Sep 29, 2025, 09_52_43 AM" src="https://github.com/user-attachments/assets/e810baf4-239d-4e5a-bcec-b038f7507601" />
