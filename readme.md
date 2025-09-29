@@ -1,6 +1,9 @@
 # Videojuego 3D de Exploración - Python
+<img width="1920" height="1080" alt="Komi_San_Maid_Outfit_Python" src="https://github.com/user-attachments/assets/7abf11c5-5c84-46af-b099-4163431b21e1" />
+
 
 Un videojuego 3D mejorado inspirado en el primer Doom, creado con Python y Pygame usando técnicas de raycasting. Versión expandida con mapa más grande y sistema de stamina para correr.
+
 
 ## Características
 
