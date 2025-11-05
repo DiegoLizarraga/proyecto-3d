@@ -22,20 +22,21 @@ WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 FPS = 60
 
+# Mapa y mundo
+TILE_SIZE = 64
+
 # Configuración del jugador
 PLAYER_SPEED = 2.5
 RUN_SPEED = 4.5
 TURN_SPEED = 3
+MOUSE_SENSITIVITY = 0.2  # Sensibilidad del mouse para rotación de cámara
 FOV = 60
 HALF_FOV = FOV / 2
-NUM_RAYS = WINDOW_WIDTH  # Aumentado para reducir pixelación
+NUM_RAYS = WINDOW_WIDTH  # Mantenido para compatibilidad
 STAMINA_MAX = 100
 STAMINA_REGEN = 1.5
 STAMINA_DRAIN = 2.0
-SPRAY_RANGE = 64 * 1.5  # TILE_SIZE * 1.5
-
-# Mapa
-TILE_SIZE = 64
+SPRAY_RANGE = TILE_SIZE * 1.5
 
 # Graffiti
 GRAFFITI_SIZE = 256  # Resolución más alta para graffiti

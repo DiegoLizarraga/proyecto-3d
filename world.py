@@ -3,6 +3,7 @@ import random
 
 from settings import TILE_SIZE
 
+# Mapa del mundo (mantiene el diseño original)
 WORLD_MAP = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -29,8 +30,9 @@ WORLD_MAP = [
 MAP_WIDTH = len(WORLD_MAP[0])
 MAP_HEIGHT = len(WORLD_MAP)
 
-# Texturas procedurales para mejorar gráficos
+# Texturas procedurales para el sistema 3D
 def create_brick_texture(size):
+    """Crea una textura de ladrillos procedural"""
     surf = pygame.Surface((size, size))
     brick_color = (180, 60, 60)
     mortar_color = (200, 200, 200)
@@ -44,6 +46,7 @@ def create_brick_texture(size):
     return surf
 
 def create_white_texture(size):
+    """Crea una textura blanca con ruido para simular piedra"""
     surf = pygame.Surface((size, size))
     for x in range(size):
         for y in range(size):
@@ -52,10 +55,13 @@ def create_white_texture(size):
             surf.set_at((x, y), (c, c, c))
     return surf
 
+# Diccionario de texturas (usado en el sistema antiguo, mantenido por compatibilidad)
 WALL_TEXTURES = {
     1: create_brick_texture(TILE_SIZE),
     2: create_white_texture(TILE_SIZE),
 }
 
-# Graffiti storage
+# Almacenamiento de graffiti
+# Clave: (x, z, face) donde face puede ser 'N', 'S', 'E', 'W'
+# Valor: superficie pygame con el graffiti dibujado
 graffiti_walls = {}
