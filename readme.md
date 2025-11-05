@@ -157,90 +157,32 @@ En `settings.py`, modifica `SPRAY_COLORS`:
 SPRAY_COLORS = [RED, BLUE, GREEN, YELLOW, PINK, ORANGE, PURPLE, CYAN]
 ```
 
-### Ajustar Rendimiento
-- **Reducir niebla**: Modifica `GL_FOG_END` en `engine3d.py`
-- **Resolución de graffiti**: Cambia `GRAFFITI_SIZE` en `settings.py`
-- **FPS target**: Modifica `FPS` en `settings.py`
+### Jugador y Movimiento
+- **Velocidades**: Ajusta `PLAYER_SPEED` y `RUN_SPEED`
+- **Stamina**: Modifica tasas de regeneración y consumo
+- **Rotación**: Cambia `TURN_SPEED`
 
-## 🐛 Solución de Problemas
+### Visuales
+- **Resolución**: Modifica `WINDOW_WIDTH` y `WINDOW_HEIGHT`
+- **Campo de visión**: Ajusta `FOV`
+- **Calidad de renderizado**: Cambia `NUM_RAYS`
+- **Colores**: Personaliza todas las constantes de color
 
-### El juego no inicia
-- Verifica que OpenGL esté instalado: `python -c "from OpenGL import GL"`
-- Actualiza tus drivers de tarjeta gráfica
-- Comprueba que tienes Python 3.8+
+## Ideas para Futuras Mejoras
 
-### Rendimiento bajo
-- Reduce `GRAFFITI_SIZE` en `settings.py`
-- Cierra otros programas que usen GPU
-- Verifica que estés usando la tarjeta gráfica dedicada (no integrada)
+- **Texturas** en las paredes en lugar de colores sólidos
+- **Múltiples niveles** con escaleras o teleportadores
+- **Objetos coleccionables** dispersos por el mapa
+- **Sonidos ambientales** y efectos de audio
+- **Puertas** que se pueden abrir y cerrar
+- **Iluminación dinámica** con antorchas o lámparas
+- **Partículas** y efectos visuales atmosféricos
+- **Sistema de guardado** de progreso
 
-### Mouse no responde bien
-- Ajusta `MOUSE_SENSITIVITY` en `settings.py`
-- Verifica que el juego tenga el foco de la ventana
+## Rendimiento
 
-### Graffitis no aparecen
-- Asegúrate de estar cerca de la pared (dentro de `SPRAY_RANGE`)
-- Presiona Z mientras miras directamente a la pared
-- Verifica que la pared no esté en el límite del mapa
+- El juego está optimizado para correr a **60 FPS** en hardware moderno bueno falta optimizarlo
+- El número de rayos puede ajustarse para mejor rendimiento en hardware más lento
+- La resolución puede reducirse para mejorar el framerate
 
-## 🚀 Mejoras Futuras
-
-- [ ] **Texturas de imagen** cargadas desde archivos
-- [ ] **Sistema de guardado** de graffitis entre sesiones
-- [ ] **Multijugador** para colaborar en graffitis
-- [ ] **Galería** de graffitis guardados
-- [ ] **Más herramientas**: cubeta de relleno, texto, selección
-- [ ] **Capas** en el editor de graffiti
-- [ ] **Efectos de partículas** al pintar
-- [ ] **Sonidos** ambientales y de spray
-- [ ] **Enemigos IA** para añadir desafío
-- [ ] **Múltiples niveles** con diferentes ambientes
-- [ ] **Física de objetos** interactivos
-- [ ] **Iluminación dinámica** avanzada con sombras
-
-## 📝 Notas de Desarrollo
-
-### Diferencias con el Sistema Raycasting Original
-Este juego ha sido completamente reescrito desde un sistema de raycasting 2.5D (estilo Doom) a un motor 3D completo con OpenGL (estilo Half-Life):
-
-**Antes (Raycasting):**
-- Vista pseudo-3D generada por rayos
-- Solo rotación 2D
-- Paredes como sprites verticales
-- Limitado a geometría ortogonal
-
-**Ahora (OpenGL):**
-- Geometría 3D verdadera
-- Control de cámara FPS completo (horizontal)
-- Paredes, suelos y techos como polígonos 3D
-- Iluminación y efectos avanzados
-- Mejor rendimiento con hardware moderno
-
-### Arquitectura del Motor
-El motor sigue un patrón de **Entity-Component-System simplificado**:
-- `Player3D`: Entidad del jugador con física y controles
-- `Camera`: Componente de vista 3D
-- `Renderer3D`: Sistema de renderizado
-- `UI3D`: Sistema de interfaz overlay
-
-## 📜 Licencia
-
-Este proyecto es de código abierto y está disponible bajo la licencia MIT. Siéntete libre de modificarlo, mejorarlo y compartirlo.
-
-## 🤝 Contribuciones
-
-¡Las contribuciones son bienvenidas! Si tienes ideas para mejorar el juego:
-1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/MiMejora`)
-3. Commit tus cambios (`git commit -m 'Agrega MiMejora'`)
-4. Push a la rama (`git push origin feature/MiMejora`)
-5. Abre un Pull Request
-
-## 👨‍💻 Créditos
-
-Desarrollado con Python, Pygame y PyOpenGL.
-Inspirado en los clásicos FPS de los 90s como Half-Life y Counter-Strike.
-
----
-
-**¡Diviértete creando graffitis en el mundo 3D!** 🎨🎮
+¡Disfruta explorando el mundo 3D!
