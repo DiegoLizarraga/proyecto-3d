@@ -1,161 +1,106 @@
-# Videojuego 3D Estilo Half-Life - Graffiti Edition
+# Videojuego 3D de Exploración - Python
+<img width="1920" height="1080" alt="Komi_San_Maid_Outfit_Python" src="https://github.com/user-attachments/assets/7abf11c5-5c84-46af-b099-4163431b21e1" />
 
-Un videojuego 3D con motor real de OpenGL inspirado en Half-Life, creado con Python, Pygame y PyOpenGL. Incluye un sistema completo de graffiti para pintar en las paredes del mundo 3D.
 
-![Screenshot del juego](screenshot.png)
+Un videojuego 3D mejorado inspirado en el primer Doom, creado con Python y Pygame usando técnicas de raycasting. Versión expandida con mapa más grande y sistema de stamina para correr.
 
-## 🎮 Características Principales
 
-### Motor 3D Real (OpenGL)
-- **Geometría 3D verdadera** con paredes, suelos y techos renderizados en OpenGL
-- **Iluminación dinámica** que sigue al jugador
-- **Niebla atmosférica** para añadir profundidad y ambiente
-- **Texturas procedurales** en paredes (ladrillos y piedra)
-- **Culling de caras** para optimizar el rendimiento
+## Características
 
-### Sistema de Movimiento Avanzado
-- **Control con mouse** para rotación suave de cámara (solo horizontal, sin mirar arriba/abajo)
-- **Movimiento WASD** completo con strafe lateral
-- **Sistema de stamina** con sprint limitado
-- **Colisión circular** suave con las paredes
-- **Velocidad ajustable** entre caminar y correr
+- **Vista 3D en primera persona** usando raycasting avanzado
+- **Mapa expansivo** de 20x20 con múltiples áreas para explorar
+- **Sistema de movimiento mejorado** con capacidad de correr y movimiento lateral
+- **Sistema de stamina** que limita el tiempo de carrera
+- **Diferentes tipos de paredes** con colores distintivos
+- **Minimapa detallado** en tiempo real con colores diferenciados
+- **Interfaz de usuario** con barra de stamina e indicadores de estado
+- **Detección de colisiones** suave y precisa
+- **Efectos visuales** mejorados con gradientes en cielo y suelo
 
-### Sistema de Graffiti Completo
-- **Modo pintura inmersivo** al presionar Z cerca de una pared
-- **Múltiples herramientas**: lápiz, borrador, líneas, rectángulos, círculos y spray
-- **8 colores diferentes** para elegir
-- **Tamaño de pincel ajustable** (1-50 píxeles)
-- **Alta resolución** (256x256) para graffitis detallados
-- **Persistencia en el mundo 3D** - tus dibujos permanecen en las paredes
-- **Graffiti por cara** - cada lado de la pared puede tener su propio diseño
+## Requisitos
 
-### Interfaz y UI
-- **Minimapa en tiempo real** con indicadores de posición y dirección
-- **Barra de stamina** con colores de alerta
-- **Crosshair central** para mejor puntería
-- **Contador de graffitis** creados
-- **Controles en pantalla** siempre visibles
+- Python 3.7 o superior
+- Pygame 2.5.2
 
-## 📋 Requisitos
+## Instalación
 
-- Python 3.8 o superior
-- Tarjeta gráfica con soporte OpenGL 2.0+
-- 4GB RAM mínimo
-- Sistema operativo: Windows, Linux o macOS
+1. **Clona o descarga los archivos del proyecto**
 
-## 🔧 Instalación
-
-1. **Clona o descarga el proyecto:**
-   ```bash
-   git clone <tu-repositorio>
-   cd graffiti-3d-game
-   ```
-
-2. **Instala las dependencias:**
+2. **Instala Pygame usando pip:**
    ```bash
    pip install -r requirements.txt
    ```
    
-   Las dependencias incluyen:
-   - `pygame==2.5.2` - Motor de juego base
-   - `PyOpenGL==3.1.7` - Renderizado 3D
-   - `PyOpenGL-accelerate==3.1.7` - Aceleración de rendimiento
-   - `numpy>=1.24.0` - Operaciones matemáticas
+   O directamente:
+   ```bash
+   pip install pygame
+   ```
 
 3. **Ejecuta el juego:**
    ```bash
    python main.py
    ```
 
-## 🎯 Controles
+## Controles
 
-### Movimiento
-- **Mouse**: Rotar cámara (solo horizontal)
-- **W**: Avanzar
-- **S**: Retroceder
-- **A**: Moverse lateral izquierda (strafe)
-- **D**: Moverse lateral derecha (strafe)
-- **SHIFT**: Correr (consume stamina)
-- **Flechas**: Control alternativo de rotación
+### Movimiento Básico
+- **W** o **Flecha Arriba**: Avanzar
+- **S** o **Flecha Abajo**: Retroceder  
+- **A** o **Flecha Izquierda**: Girar a la izquierda
+- **D** o **Flecha Derecha**: Girar a la derecha
 
-### Sistema de Graffiti
-- **Z**: Entrar en modo pintura (cerca de una pared)
-- **C**: Limpiar todos los graffitis del mapa
+### Movimiento Avanzado
+- **Q**: Moverse lateralmente a la izquierda (strafing)
+- **E**: Moverse lateralmente a la derecha (strafing)
+- **SHIFT** (mantener): Correr (consume stamina)
 
-### Modo Pintura (cuando presionas Z)
-#### Herramientas:
-- **P**: Lápiz (dibujo libre)
-- **E**: Borrador
-- **L**: Línea recta
-- **R**: Rectángulo
-- **O**: Círculo
-- **S**: Spray (efecto aerosol)
+### Otros
+- **ESC**: Salir del juego
 
-#### Colores:
-- **1-8**: Cambiar entre 8 colores predefinidos (rojo, azul, verde, amarillo, rosa, naranja, púrpura, cian)
+## Nuevas Características
 
-#### Ajustes:
-- **+/=**: Aumentar tamaño de pincel
-- **-**: Disminuir tamaño de pincel
-- **X**: Limpiar el canvas actual completamente
+### Sistema de Stamina
+- **Barra de stamina** visible en la esquina inferior derecha
+- **Regeneración automática** cuando no estás corriendo
+- **Indicador visual** de estado (caminando/corriendo)
+- **Colores de alerta** cuando la stamina está baja
 
-#### Salir:
-- **ESC**: Salir del modo pintura y volver al juego
+### Mapa Expandido
+- **Tamaño 20x20** con múltiples salas y pasillos
+- **Dos tipos de paredes**: básicas (grises) y especiales (marrones)
+- **Diseño laberíntico** con múltiples rutas de exploración
+- **Salas interconectadas** para una experiencia de exploración rica
 
-### General
-- **ESC**: Salir del juego (cuando no estás en modo pintura)
+### Mejoras Visuales
+- **Gradientes** en cielo y suelo para mayor realismo
+- **Sombreado mejorado** basado en distancia
+- **Colores diferenciados** para tipos de pared
+- **Minimapa detallado** con código de colores
 
-## 🏗️ Estructura del Proyecto
+## Cómo funciona
 
-```
-graffiti-3d-game/
-├── main.py              # Archivo principal, loop del juego
-├── engine3d.py          # Motor de renderizado 3D con OpenGL
-├── player3d.py          # Lógica del jugador y física
-├── ui3d.py              # Sistema de UI compatible con OpenGL
-├── paint_mode.py        # Sistema completo de graffiti
-├── world.py             # Definición del mapa y texturas
-├── settings.py          # Configuración y constantes
-├── requirements.txt     # Dependencias
-└── README.md           # Este archivo
-```
+El juego utiliza **raycasting**, la misma técnica que usaba el Doom original, pero con mejoras:
 
-## 🎨 Sistema de Graffiti - Detalles Técnicos
+1. **Para cada columna de píxeles** en la pantalla se lanza un "rayo"
+2. **Se detecta el tipo de pared** que intersecta el rayo
+3. **Se calcula la distancia** y se aplica corrección de "ojo de pez"
+4. **Se dibuja una línea vertical** proporcional a la distancia
+5. **Se aplican efectos visuales** como sombreado y colores específicos
 
-### Cómo Funciona
-1. Al presionar **Z** cerca de una pared, el juego detecta qué cara de la pared estás mirando
-2. Se crea una superficie de 256x256 píxeles para esa cara específica
-3. Puedes dibujar en esta superficie con varias herramientas
-4. El dibujo se convierte en textura OpenGL y se mapea sobre la pared
-5. Cada cara de cada pared puede tener su propio graffiti independiente
+## Estructura del proyecto
 
-### Características Avanzadas
-- **Transparencia alfa**: Los graffitis respetan la transparencia
-- **Blending correcto**: Se mezclan apropiadamente con las texturas de pared
-- **Z-fighting prevention**: Los graffitis se renderizan con un pequeño offset
-- **Caché de texturas**: Las texturas se generan una vez y se reutilizan
+- `main.py`: Archivo principal con toda la lógica del juego mejorado
+- `requirements.txt`: Dependencias de Python necesarias
+- `README.md`: Este archivo con las instrucciones actualizadas
 
-## ⚙️ Personalización
+## Personalización
 
-### Modificar el Mapa
-Edita `WORLD_MAP` en `world.py`:
-- `0` = espacio vacío
-- `1` = pared de ladrillos (roja)
-- `2` = pared de piedra (blanca)
+Puedes modificar fácilmente:
 
-### Ajustar Velocidades
-En `settings.py`:
-```python
-PLAYER_SPEED = 2.5      # Velocidad caminando
-RUN_SPEED = 4.5         # Velocidad corriendo
-MOUSE_SENSITIVITY = 0.2  # Sensibilidad del mouse
-```
-
-### Cambiar Colores de Graffiti
-En `settings.py`, modifica `SPRAY_COLORS`:
-```python
-SPRAY_COLORS = [RED, BLUE, GREEN, YELLOW, PINK, ORANGE, PURPLE, CYAN]
-```
+### Mapa y Mundo
+- **Mapa**: Edita la variable `WORLD_MAP` en `main.py`
+- **Colores de paredes**: Modifica el diccionario `WALL_COLORS`
+- **Tamaño de tiles**: Cambia `TILE_SIZE`
 
 ### Jugador y Movimiento
 - **Velocidades**: Ajusta `PLAYER_SPEED` y `RUN_SPEED`
@@ -186,3 +131,8 @@ SPRAY_COLORS = [RED, BLUE, GREEN, YELLOW, PINK, ORANGE, PURPLE, CYAN]
 - La resolución puede reducirse para mejorar el framerate
 
 ¡Disfruta explorando el mundo 3D!
+
+
+me dejo en locura python
+
+<img width="1536" height="1024" alt="ChatGPT Image Sep 29, 2025, 09_52_43 AM" src="https://github.com/user-attachments/assets/e810baf4-239d-4e5a-bcec-b038f7507601" />
