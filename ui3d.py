@@ -37,7 +37,7 @@ class UI3D:
     def end_2d_rendering(self):
         """Restaura modo 3D"""
         glEnable(GL_DEPTH_TEST)
-        glEnable(GL_LIGHTING)
+        glDisable(GL_LIGHTING)
         glEnable(GL_FOG)
         glMatrixMode(GL_PROJECTION)
         glPopMatrix()

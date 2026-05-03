@@ -21,7 +21,7 @@ renderer = Renderer3D(WINDOW_WIDTH, WINDOW_HEIGHT)
 renderer.init_opengl()
 
 # Jugador y cámara
-player = Player3D(TILE_SIZE * 1.5, TILE_SIZE * 1.5, 0)
+player = Player3D(TILE_SIZE * 1.5, TILE_SIZE * 1.5, 270)
 camera = Camera(player.x, TILE_SIZE * 0.6, player.z, player.yaw)  # Altura de ojos
 
 # UI
