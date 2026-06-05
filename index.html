@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pintura por tíner — Graffiti Edition (Web)</title>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --neon-green:#39ff14;
+    --neon-pink:#ff1493;
+    --neon-blue:#00bfff;
+    --neon-yellow:#ffff00;
+    --neon-orange:#ffa500;
+    --dark-bg:rgba(14,14,22,.85);
+    --fog:#26262f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;overflow:hidden;background:#0b0b12;font-family:'Share Tech Mono',monospace;color:#eaeaea;cursor:default;}
+  #game{position:fixed;inset:0;}
+  canvas#scene{display:block;width:100%;height:100%;}
+
+  /* ---------- HUD ---------- */
+  .hud{position:absolute;pointer-events:none;text-shadow:0 0 6px rgba(0,0,0,.9);}
+  #minimap-wrap{top:12px;left:12px;border:2px solid var(--neon-blue);
+    box-shadow:0 0 12px rgba(0,191,255,.5);background:var(--dark-bg);padding:4px;border-radius:4px;}
+  #minimap{display:block;image-rendering:pixelated;}
+
+  #controls{top:12px;right:12px;background:var(--dark-bg);border:1px solid rgba(255,255,255,.15);
+    border-radius:6px;padding:10px 12px;font-size:12px;line-height:1.55;min-width:160px;}
+  #controls h3{font-family:'Bungee',cursive;color:var(--neon-yellow);font-size:12px;letter-spacing:1px;margin-bottom:6px;}
+  #controls .k{color:var(--neon-green);}
+  #controls .sec{color:var(--neon-pink);margin-top:6px;}
+
+  #bottom-left{left:16px;bottom:16px;}
+  #stamina-label{font-size:12px;color:var(--neon-orange);margin-bottom:3px;letter-spacing:1px;}
+  #stamina-track{width:170px;height:16px;background:#28282f;border:2px solid var(--neon-blue);
+    box-shadow:0 0 10px rgba(0,191,255,.4);border-radius:3px;overflow:hidden;}
+  #stamina-fill{height:100%;width:100%;background:var(--neon-green);transition:width .05s linear;}
+  #graffiti-count{font-size:12px;color:var(--neon-pink);margin-top:8px;letter-spacing:1px;}
+
+  /* crosshair */
+  #crosshair{left:50%;top:50%;transform:translate(-50%,-50%);width:30px;height:30px;}
+  #crosshair .h,#crosshair .v{position:absolute;background:var(--neon-blue);box-shadow:0 0 6px currentColor;}
+  #crosshair.active .h,#crosshair.active .v{background:var(--neon-green);}
+  #crosshair .h{top:50%;left:0;width:100%;height:2px;transform:translateY(-50%);color:inherit;}
+  #crosshair .v{left:50%;top:0;height:100%;width:2px;transform:translateX(-50%);}
+
+  #paint-prompt{left:50%;top:34px;transform:translateX(-50%);font-family:'Bungee',cursive;
+    color:var(--neon-green);font-size:16px;letter-spacing:1px;opacity:0;transition:opacity .15s;
+    text-shadow:0 0 10px var(--neon-green);}
+  #paint-prompt.show{opacity:1;}
+
+  /* ---------- Start / pause overlay ---------- */
+  #overlay{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,#15151f 0%,#08080d 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:30;}
+  #overlay::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px);}
+  #overlay h1{font-family:'Bungee',cursive;font-size:clamp(28px,6vw,56px);line-height:1.05;
+    background:linear-gradient(90deg,var(--neon-pink),var(--neon-yellow),var(--neon-green),var(--neon-blue));
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(255,20,147,.4));}
+  #overlay p{margin-top:14px;font-size:15px;color:#cfcfe0;max-width:520px;}
+  #overlay .play{margin-top:26px;font-family:'Bungee',cursive;font-size:18px;padding:14px 34px;
+    border:2px solid var(--neon-green);color:var(--neon-green);background:transparent;border-radius:6px;
+    cursor:pointer;letter-spacing:1px;box-shadow:0 0 16px rgba(57,255,20,.35);transition:.15s;}
+  #overlay .play:hover{background:var(--neon-green);color:#08080d;}
+  #overlay .keys{margin-top:24px;font-size:12px;color:#8a8aa0;line-height:1.7;}
+  #overlay .keys b{color:var(--neon-yellow);}
+
+  /* ---------- Paint mode ---------- */
+  #paint{position:absolute;inset:0;z-index:40;display:none;background:rgba(8,8,14,.92);
+    backdrop-filter:blur(2px);flex-direction:column;align-items:center;justify-content:center;}
+  #paint.show{display:flex;}
+  .paint-shell{display:flex;gap:18px;align-items:flex-start;}
+  #paint-canvas{background:#f0f0f0;border:3px solid var(--neon-blue);box-shadow:0 0 30px rgba(0,191,255,.4);
+    cursor:crosshair;image-rendering:pixelated;border-radius:2px;touch-action:none;}
+  .panel{background:rgba(28,28,40,.95);border:2px solid rgba(255,255,255,.2);border-radius:8px;
+    padding:16px;width:220px;font-size:13px;}
+  .panel h3{font-family:'Bungee',cursive;color:var(--neon-yellow);font-size:14px;margin-bottom:10px;letter-spacing:1px;}
+  .tools{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+  .tool{padding:8px 6px;border:1px solid rgba(255,255,255,.2);border-radius:5px;background:#1c1c28;
+    color:#ddd;cursor:pointer;text-align:center;font-size:12px;transition:.1s;}
+  .tool:hover{border-color:var(--neon-blue);}
+  .tool.active{background:var(--neon-green);color:#08080d;border-color:var(--neon-green);font-weight:bold;}
+  .swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:6px 0 12px;}
+  .sw{aspect-ratio:1;border-radius:4px;border:2px solid rgba(255,255,255,.3);cursor:pointer;}
+  .sw.active{border-color:#fff;box-shadow:0 0 8px #fff;transform:scale(1.08);}
+  .row{display:flex;align-items:center;gap:8px;margin:8px 0;}
+  .row label{flex:0 0 64px;color:#b8b8c8;}
+  input[type=range]{flex:1;accent-color:var(--neon-pink);}
+  .cur-color{width:100%;height:34px;border-radius:5px;border:2px solid #fff;margin-top:4px;}
+  .panel .btn{display:block;width:100%;margin-top:8px;padding:9px;border-radius:5px;cursor:pointer;
+    font-family:'Share Tech Mono';font-size:13px;border:1px solid;background:transparent;letter-spacing:.5px;}
+  .btn.clear{color:var(--neon-orange);border-color:var(--neon-orange);}
+  .btn.clear:hover{background:var(--neon-orange);color:#08080d;}
+  .btn.done{color:var(--neon-green);border-color:var(--neon-green);margin-top:14px;}
+  .btn.done:hover{background:var(--neon-green);color:#08080d;}
+  .hint{font-size:11px;color:#8a8aa0;margin-top:10px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div id="game">
+  <canvas id="scene"></canvas>
+
+  <!-- HUD -->
+  <div id="minimap-wrap" class="hud"><canvas id="minimap" width="180" height="180"></canvas></div>
+
+  <div id="controls" class="hud">
+    <h3>CONTROLES</h3>
+    <div><span class="k">Mouse</span> — Mirar</div>
+    <div><span class="k">WASD</span> — Mover</div>
+    <div><span class="k">Shift</span> — Correr</div>
+    <div class="sec">GRAFFITI</div>
+    <div><span class="k">Z</span> — Modo paint</div>
+    <div><span class="k">C</span> — Limpiar todo</div>
+    <div class="sec">&nbsp;</div>
+    <div><span class="k">Esc</span> — Pausa</div>
+  </div>
+
+  <div id="bottom-left" class="hud">
+    <div id="stamina-label">ENERGÍA: 100</div>
+    <div id="stamina-track"><div id="stamina-fill"></div></div>
+    <div id="graffiti-count">PAREDES PINTADAS: 0</div>
+  </div>
+
+  <div id="crosshair" class="hud"><div class="h"></div><div class="v"></div></div>
+  <div id="paint-prompt" class="hud">¡PULSA Z PARA PINTAR!</div>
+
+  <!-- Start / pause -->
+  <div id="overlay">
+    <h1>PINTURA POR TÍNER<br>GRAFFITI EDITION</h1>
+    <p>Explora el laberinto en primera persona. Acércate a una pared, pulsa <b>Z</b> y deja tu graffiti. Tu arte se queda pegado en el muro.</p>
+    <button class="play" id="play-btn">JUGAR ▸</button>
+    <div class="keys">
+      <b>WASD</b> moverte &nbsp;·&nbsp; <b>Mouse</b> mirar &nbsp;·&nbsp; <b>Shift</b> correr<br>
+      <b>Z</b> pintar pared &nbsp;·&nbsp; <b>C</b> borrar todo &nbsp;·&nbsp; <b>Esc</b> pausa
+    </div>
+  </div>
+
+  <!-- Paint editor -->
+  <div id="paint">
+    <div class="paint-shell">
+      <canvas id="paint-canvas" width="512" height="512"></canvas>
+      <div class="panel">
+        <h3>SPRAY STUDIO</h3>
+        <div class="tools" id="tools">
+          <div class="tool active" data-tool="brush">Pincel</div>
+          <div class="tool" data-tool="spray">Spray</div>
+          <div class="tool" data-tool="eraser">Borrar</div>
+          <div class="tool" data-tool="fill">Relleno</div>
+        </div>
+        <div>Colores</div>
+        <div class="swatches" id="swatches"></div>
+        <div class="cur-color" id="cur-color"></div>
+        <div class="row"><label>Tamaño</label><input type="range" id="size" min="1" max="60" value="14"></div>
+        <button class="btn clear" id="clear-wall">Limpiar pared (X)</button>
+        <button class="btn done" id="done">✓ Terminar (Esc)</button>
+        <div class="hint">Pinta y al terminar verás tu graffiti en la pared del mundo 3D.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============================================================================
+   PINTURA POR TÍNER — GRAFFITI EDITION
+   Port a Three.js / WebGL del juego original en Python (pygame + PyOpenGL).
+   ========================================================================== */
+
+// ---- Mapa del mundo (idéntico al world.py original) ------------------------
+const WORLD_MAP = [
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,0,1],
+  [1,0,1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,1,0,1],
+  [1,0,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,2,2,2,2,0,0,0,0,0,0,2,2,2,2,0,0,1],
+  [1,0,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,1],
+  [1,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,1],
+  [1,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,1],
+  [1,0,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,0,1],
+  [1,0,1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,1,0,1],
+  [1,0,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,2,2,2,2,0,0,0,0,0,0,2,2,2,2,0,0,1],
+  [1,0,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+];
+const MAP_H = WORLD_MAP.length;
+const MAP_W = WORLD_MAP[0].length;
+
+// ---- Constantes (1 unidad = 1 tile) ----------------------------------------
+const WALL_H   = 1.5;
+const EYE_H    = 0.6;
+const RADIUS   = 0.3;          // radio de colisión
+const WALK     = 2.4;          // unidades/seg
+const RUN      = 4.4;
+const SENS     = 0.0022;       // sensibilidad del mouse
+const SPRAY_RANGE = 1.6;       // alcance para detectar pared y pintar
+const STAMINA_MAX = 100, STAMINA_DRAIN = 38, STAMINA_REGEN = 22; // por segundo
+const GRAFFITI_RES = 512;
+
+const WALL_COLORS = { 1:0xd16b61, 2:0xebebe6, 3:0xb3b3b8 };
+const FOG_COLOR = 0x26262f;
+
+// ---- Three.js setup --------------------------------------------------------
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(FOG_COLOR);
+scene.fog = new THREE.Fog(FOG_COLOR, 6, 16);
+
+const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 200);
+
+// Luces (sustituyen al FACE_SHADE manual del original)
+scene.add(new THREE.HemisphereLight(0xbfcfff, 0x202028, 0.65));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75);
+sun.position.set(0.6, 1, 0.35);
+scene.add(sun);
+scene.add(new THREE.AmbientLight(0x404050, 0.5));
+
+// ---- Suelo (patrón de tablero) y techo -------------------------------------
+function makeCheckerTexture(){
+  const c = document.createElement('canvas'); c.width = c.height = MAP_W*8;
+  const g = c.getContext('2d');
+  for(let z=0; z<MAP_H; z++) for(let x=0; x<MAP_W; x++){
+    g.fillStyle = ((x+z)%2===0) ? '#4d4d54' : '#595961';
+    g.fillRect(x*8, z*8, 8, 8);
+  }
+  const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; return t;
+}
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(MAP_W, MAP_H),
+  new THREE.MeshLambertMaterial({ map: makeCheckerTexture() })
+);
+floor.rotation.x = -Math.PI/2;
+floor.position.set(MAP_W/2, 0, MAP_H/2);
+scene.add(floor);
+
+const ceiling = new THREE.Mesh(
+  new THREE.PlaneGeometry(MAP_W, MAP_H),
+  new THREE.MeshLambertMaterial({ color:0x33333f, side:THREE.DoubleSide })
+);
+ceiling.rotation.x = Math.PI/2;
+ceiling.position.set(MAP_W/2, WALL_H, MAP_H/2);
+scene.add(ceiling);
+
+// ---- Paredes ---------------------------------------------------------------
+// Cada celda con pared = un cubo con 6 materiales (uno por cara) para poder
+// pintar graffiti cara por cara. Índices de BoxGeometry:
+//   0:+X(Este) 1:-X(Oeste) 2:+Y(top) 3:-Y(bottom) 4:+Z(Sur) 5:-Z(Norte)
+const FACE_INDEX = { E:0, W:1, S:4, N:5 };
+const wallGeo = new THREE.BoxGeometry(1, WALL_H, 1);
+const wallMeshes = {};        // "x,z" -> mesh
+const graffiti = {};          // "x,z,face" -> { canvas, ctx, texture }
+
+function baseMat(type){
+  return new THREE.MeshLambertMaterial({ color: WALL_COLORS[type] || WALL_COLORS[3] });
+}
+for(let z=0; z<MAP_H; z++) for(let x=0; x<MAP_W; x++){
+  const t = WORLD_MAP[z][x];
+  if(!t) continue;
+  const mats = [baseMat(t),baseMat(t),baseMat(t),baseMat(t),baseMat(t),baseMat(t)];
+  const mesh = new THREE.Mesh(wallGeo, mats);
+  mesh.position.set(x+0.5, WALL_H/2, z+0.5);
+  scene.add(mesh);
+  wallMeshes[x+','+z] = mesh;
+}
+
+// ---- Jugador / cámara ------------------------------------------------------
+const player = {
+  x: 1.5, z: 1.5, yaw: Math.PI*1.5, pitch: 0,
+  stamina: STAMINA_MAX, running:false
+};
+function syncCamera(){
+  camera.position.set(player.x, EYE_H, player.z);
+  const cy = Math.cos(player.yaw), sy = Math.sin(player.yaw), cp = Math.cos(player.pitch);
+  camera.lookAt(player.x + cy*cp, EYE_H + Math.sin(player.pitch), player.z + sy*cp);
+}
+
+function isWall(mx, mz){
+  if(mx<0||mx>=MAP_W||mz<0||mz>=MAP_H) return true;
+  return WORLD_MAP[mz][mx] > 0;
+}
+function canMoveTo(x, z){
+  for(let a=0; a<360; a+=45){
+    const r = a*Math.PI/180;
+    if(isWall(Math.floor(x+Math.cos(r)*RADIUS), Math.floor(z+Math.sin(r)*RADIUS))) return false;
+  }
+  return true;
+}
+
+// Raycast tipo DDA simplificado: ¿qué pared/cara tengo enfrente?
+function wallInFront(){
+  let rx = player.x, rz = player.z;
+  const dx = Math.cos(player.yaw), dz = Math.sin(player.yaw);
+  const step = 0.05;
+  let pmx = Math.floor(rx), pmz = Math.floor(rz);
+  for(let d=0; d<SPRAY_RANGE; d+=step){
+    rx += dx*step; rz += dz*step;
+    const mx = Math.floor(rx), mz = Math.floor(rz);
+    if(mx<0||mx>=MAP_W||mz<0||mz>=MAP_H) return null;
+    if(WORLD_MAP[mz][mx] > 0){
+      let face;
+      if(mx !== pmx && mz === pmz)      face = dx > 0 ? 'W' : 'E';
+      else if(mz !== pmz && mx === pmx) face = dz > 0 ? 'N' : 'S';
+      else face = Math.abs(dx) > Math.abs(dz) ? (dx>0?'W':'E') : (dz>0?'N':'S');
+      return { x:mx, z:mz, face };
+    }
+    pmx = mx; pmz = mz;
+  }
+  return null;
+}
+
+// ---- Input -----------------------------------------------------------------
+const keys = {};
+let paused = true, painting = false;
+addEventListener('keydown', e=>{
+  keys[e.code] = true;
+  if(painting) return;
+  if(e.code === 'KeyZ') tryPaint();
+  if(e.code === 'KeyC') clearAllGraffiti();
+});
+addEventListener('keyup', e=>{ keys[e.code] = false; });
+
+canvas.addEventListener('mousemove', e=>{
+  if(paused || painting) return;
+  player.yaw   += e.movementX * SENS;
+  player.pitch -= e.movementY * SENS;
+  player.pitch = Math.max(-1.2, Math.min(1.2, player.pitch));
+});
+
+// Pointer lock para controlar la cámara con el mouse
+document.addEventListener('pointerlockchange', ()=>{
+  if(document.pointerLockElement !== canvas && !painting){ paused = true; showOverlay(true); }
+});
+function lock(){ canvas.requestPointerLock(); }
+
+const overlay = document.getElementById('overlay');
+function showOverlay(show){ overlay.style.display = show ? 'flex' : 'none'; }
+document.getElementById('play-btn').onclick = ()=>{ paused=false; showOverlay(false); lock(); };
+
+// ---- Stamina + HUD refs ----------------------------------------------------
+const fillEl = document.getElementById('stamina-fill');
+const labelEl = document.getElementById('stamina-label');
+const countEl = document.getElementById('graffiti-count');
+const crossEl = document.getElementById('crosshair');
+const promptEl = document.getElementById('paint-prompt');
+
+function updateHUD(){
+  const pct = player.stamina/STAMINA_MAX;
+  fillEl.style.width = (pct*100)+'%';
+  fillEl.style.background = player.stamina>30 ? 'var(--neon-green)'
+                          : player.stamina>10 ? 'var(--neon-yellow)' : 'var(--neon-pink)';
+  labelEl.textContent = 'ENERGÍA: '+Math.round(player.stamina);
+  countEl.textContent = 'PAREDES PINTADAS: '+Object.keys(graffiti).length;
+}
+
+// ---- Minimap ---------------------------------------------------------------
+const mm = document.getElementById('minimap').getContext('2d');
+const MM = 180, cw = MM/MAP_W, ch = MM/MAP_H;
+function drawMinimap(){
+  mm.fillStyle = '#28282f'; mm.fillRect(0,0,MM,MM);
+  for(let z=0; z<MAP_H; z++) for(let x=0; x<MAP_W; x++){
+    const t = WORLD_MAP[z][x];
+    mm.fillStyle = t===0 ? '#3c3c46' : t===1 ? '#646478' : t===2 ? '#8c8ca0' : '#505064';
+    mm.fillRect(x*cw, z*ch, cw, ch);
+  }
+  // marcadores de graffiti
+  const seen = {};
+  for(const k in graffiti){ const [x,z]=k.split(','); seen[x+','+z]=1; }
+  mm.fillStyle = '#ff1493';
+  for(const k in seen){ const [x,z]=k.split(',').map(Number);
+    mm.fillRect(x*cw+cw/2-2, z*ch+ch/2-2, 4, 4); }
+  // jugador
+  const px = player.x*cw, py = player.z*ch;
+  mm.fillStyle = '#39ff14';
+  mm.beginPath(); mm.arc(px, py, 3.5, 0, 7); mm.fill();
+  mm.strokeStyle = '#39ff14'; mm.lineWidth = 2; mm.beginPath();
+  mm.moveTo(px, py); mm.lineTo(px+Math.cos(player.yaw)*11, py+Math.sin(player.yaw)*11); mm.stroke();
+}
+
+// ===========================================================================
+//  MODO PAINT
+// ===========================================================================
+const SPRAY_COLORS = ['#ff3232','#3232ff','#32ff32','#ffff32','#ff6496',
+                      '#ff9632','#9632ff','#32ffff','#111111','#ffffff'];
+const paintDiv = document.getElementById('paint');
+const pcv = document.getElementById('paint-canvas');
+const pctx = pcv.getContext('2d');
+const sizeInput = document.getElementById('size');
+const curColorEl = document.getElementById('cur-color');
+
+let curTool = 'brush', curColor = SPRAY_COLORS[0], curSize = 14;
+let activeKey = null, drawing = false, lastP = null;
+
+// swatches
+const swWrap = document.getElementById('swatches');
+SPRAY_COLORS.forEach((c,i)=>{
+  const d = document.createElement('div');
+  d.className = 'sw'+(i===0?' active':''); d.style.background = c;
+  d.onclick = ()=>{ curColor=c; curColorEl.style.background=c;
+    [...swWrap.children].forEach(s=>s.classList.remove('active')); d.classList.add('active'); };
+  swWrap.appendChild(d);
+});
+curColorEl.style.background = curColor;
+
+// tools
+document.getElementById('tools').addEventListener('click', e=>{
+  const t = e.target.closest('.tool'); if(!t) return;
+  curTool = t.dataset.tool;
+  [...document.querySelectorAll('.tool')].forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+});
+sizeInput.oninput = ()=> curSize = +sizeInput.value;
+
+function ensureGraffiti(key){
+  if(graffiti[key]) return graffiti[key];
+  const c = document.createElement('canvas'); c.width=c.height=GRAFFITI_RES;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#f0f0f0'; ctx.fillRect(0,0,GRAFFITI_RES,GRAFFITI_RES);
+  graffiti[key] = { canvas:c, ctx, texture:null };
+  return graffiti[key];
+}
+
+function tryPaint(){
+  const w = wallInFront();
+  if(!w){ return; }
+  const key = w.x+','+w.z+','+w.face;
+  activeKey = key;
+  const g = ensureGraffiti(key);
+  // cargar contenido actual en el lienzo del editor
+  pctx.clearRect(0,0,pcv.width,pcv.height);
+  pctx.drawImage(g.canvas, 0, 0, pcv.width, pcv.height);
+  painting = true;
+  document.exitPointerLock();
+  paintDiv.classList.add('show');
+}
+
+function paintPos(e){
+  const r = pcv.getBoundingClientRect();
+  const cx = (e.touches?e.touches[0].clientX:e.clientX) - r.left;
+  const cy = (e.touches?e.touches[0].clientY:e.clientY) - r.top;
+  return { x: cx * pcv.width / r.width, y: cy * pcv.height / r.height };
+}
+function brushAt(p){
+  pctx.fillStyle = curColor; pctx.beginPath();
+  pctx.arc(p.x, p.y, curSize, 0, 7); pctx.fill();
+}
+function eraseAt(p){
+  pctx.fillStyle = '#f0f0f0'; pctx.beginPath();
+  pctx.arc(p.x, p.y, curSize, 0, 7); pctx.fill();
+}
+function sprayAt(p){
+  const n = curSize*3; pctx.fillStyle = curColor;
+  for(let i=0;i<n;i++){
+    const a = Math.random()*7, d = Math.random()*curSize*1.4;
+    pctx.globalAlpha = .25 + Math.random()*.5;
+    pctx.fillRect(p.x+Math.cos(a)*d, p.y+Math.sin(a)*d, 2, 2);
+  }
+  pctx.globalAlpha = 1;
+}
+function lineSmooth(a,b,fn){
+  const dx=b.x-a.x, dy=b.y-a.y, dist=Math.hypot(dx,dy);
+  const steps = Math.max(1, dist/2);
+  for(let i=0;i<=steps;i++){ const t=i/steps; fn({x:a.x+dx*t, y:a.y+dy*t}); }
+}
+function floodFill(p){
+  const W=pcv.width, H=pcv.height;
+  const img = pctx.getImageData(0,0,W,H), data = img.data;
+  const sx=Math.floor(p.x), sy=Math.floor(p.y);
+  if(sx<0||sy<0||sx>=W||sy>=H) return;
+  const idx=(sy*W+sx)*4;
+  const tr=data[idx],tg=data[idx+1],tb=data[idx+2];
+  const tmp=document.createElement('canvas');tmp.width=tmp.height=1;
+  const tg2=tmp.getContext('2d'); tg2.fillStyle=curColor; tg2.fillRect(0,0,1,1);
+  const fc=tg2.getImageData(0,0,1,1).data;
+  if(tr===fc[0]&&tg===fc[1]&&tb===fc[2]) return;
+  const stack=[[sx,sy]], lim=W*H;
+  let count=0;
+  while(stack.length && count<lim){
+    const [x,y]=stack.pop(); count++;
+    if(x<0||y<0||x>=W||y>=H) continue;
+    const i=(y*W+x)*4;
+    if(data[i]!==tr||data[i+1]!==tg||data[i+2]!==tb) continue;
+    data[i]=fc[0];data[i+1]=fc[1];data[i+2]=fc[2];data[i+3]=255;
+    stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
+  }
+  pctx.putImageData(img,0,0);
+}
+
+function onPaintDown(e){
+  e.preventDefault();
+  const p = paintPos(e);
+  if(curTool==='fill'){ floodFill(p); return; }
+  drawing = true; lastP = p;
+  if(curTool==='brush') brushAt(p);
+  else if(curTool==='spray') sprayAt(p);
+  else if(curTool==='eraser') eraseAt(p);
+}
+function onPaintMove(e){
+  if(!drawing) return;
+  const p = paintPos(e);
+  if(curTool==='brush') lineSmooth(lastP,p,brushAt);
+  else if(curTool==='eraser') lineSmooth(lastP,p,eraseAt);
+  else if(curTool==='spray') sprayAt(p);
+  lastP = p;
+}
+function onPaintUp(){ drawing=false; lastP=null; }
+pcv.addEventListener('mousedown', onPaintDown);
+pcv.addEventListener('mousemove', onPaintMove);
+addEventListener('mouseup', onPaintUp);
+pcv.addEventListener('touchstart', onPaintDown, {passive:false});
+pcv.addEventListener('touchmove', e=>{e.preventDefault();onPaintMove(e);}, {passive:false});
+addEventListener('touchend', onPaintUp);
+
+document.getElementById('clear-wall').onclick = ()=>{
+  pctx.fillStyle='#f0f0f0'; pctx.fillRect(0,0,pcv.width,pcv.height);
+};
+document.getElementById('done').onclick = finishPaint;
+
+function finishPaint(){
+  if(!activeKey) return;
+  const g = graffiti[activeKey];
+  // volcar el editor al canvas de graffiti a resolución completa
+  g.ctx.clearRect(0,0,GRAFFITI_RES,GRAFFITI_RES);
+  g.ctx.drawImage(pcv, 0, 0, GRAFFITI_RES, GRAFFITI_RES);
+  applyGraffiti(activeKey);
+  activeKey = null;
+  paintDiv.classList.remove('show');
+  painting = false;
+  lock();
+}
+
+function applyGraffiti(key){
+  const [x,z,face] = key.split(',');
+  const g = graffiti[key];
+  if(!g.texture){ g.texture = new THREE.CanvasTexture(g.canvas); }
+  g.texture.needsUpdate = true;
+  const mesh = wallMeshes[x+','+z];
+  if(!mesh) return;
+  const fi = FACE_INDEX[face];
+  // material nuevo con la textura (clonamos para no afectar otras caras)
+  const m = new THREE.MeshLambertMaterial({ map: g.texture });
+  // corregir orientación según la cara (UV flips del original)
+  if(face==='S'||face==='E'){ g.texture.wrapS=THREE.RepeatWrapping; g.texture.repeat.x=-1; g.texture.offset.x=1; }
+  mesh.material[fi] = m;
+}
+
+function clearAllGraffiti(){
+  for(const key in graffiti){
+    const [x,z,face] = key.split(',');
+    const mesh = wallMeshes[x+','+z];
+    if(mesh){ mesh.material[FACE_INDEX[face]] = baseMat(WORLD_MAP[z][x]); }
+    delete graffiti[key];
+  }
+}
+
+// ESC dentro de paint = terminar; fuera = pausa
+addEventListener('keydown', e=>{
+  if(e.code==='Escape' && painting){ e.preventDefault(); finishPaint(); }
+  if(e.code==='KeyX' && painting){ document.getElementById('clear-wall').onclick(); }
+});
+
+// ---- Loop ------------------------------------------------------------------
+let last = performance.now();
+function tick(now){
+  const dt = Math.min(0.05, (now-last)/1000); last = now;
+
+  if(!paused && !painting){
+    // stamina
+    const wantRun = (keys['ShiftLeft']||keys['ShiftRight']);
+    player.running = wantRun && player.stamina>0;
+    player.stamina += (player.running ? -STAMINA_DRAIN : STAMINA_REGEN)*dt;
+    player.stamina = Math.max(0, Math.min(STAMINA_MAX, player.stamina));
+
+    const speed = (player.running?RUN:WALK)*dt;
+    let dx=0, dz=0;
+    const cy=Math.cos(player.yaw), sy=Math.sin(player.yaw);
+    if(keys['KeyW']||keys['ArrowUp'])   { dx+=cy*speed; dz+=sy*speed; }
+    if(keys['KeyS']||keys['ArrowDown']) { dx-=cy*speed; dz-=sy*speed; }
+    if(keys['KeyA']) { dx+=Math.cos(player.yaw-Math.PI/2)*speed; dz+=Math.sin(player.yaw-Math.PI/2)*speed; }
+    if(keys['KeyD']) { dx+=Math.cos(player.yaw+Math.PI/2)*speed; dz+=Math.sin(player.yaw+Math.PI/2)*speed; }
+    if(keys['ArrowLeft'])  player.yaw -= 2.2*dt;
+    if(keys['ArrowRight']) player.yaw += 2.2*dt;
+
+    if(canMoveTo(player.x+dx, player.z)) player.x += dx;
+    if(canMoveTo(player.x, player.z+dz)) player.z += dz;
+
+    // prompt + crosshair
+    const w = wallInFront();
+    promptEl.classList.toggle('show', !!w);
+    crossEl.classList.toggle('active', !!w);
+  }
+
+  syncCamera();
+  updateHUD();
+  drawMinimap();
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+
+function resize(){
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w/h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+syncCamera();
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
